@@ -75,10 +75,10 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => 'root',
-	'password' => '',
-	'database' => 'pos-sederhana',
+'hostname'     => 'homeschoolingmalang.com',
+	'username'     => 'u5480206_kursusonline',
+	'password'     => '@Some_112115@',
+	'database'     => 'u5480206_kasir',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
