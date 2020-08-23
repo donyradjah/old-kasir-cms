@@ -71,7 +71,6 @@ $route["produk/tambah"] = "ProdukFront/tambah";
 $route["produk/simpan"] = "ProdukFront/simpan";
 $route["produk/ubah/(:num)"] = "ProdukFront/ubah/$1";
 $route["produk/simpan-ubah"] = "ProdukFront/simpanUbah";
-$route["produk/ganti-status"] = "ProdukFront/gantiStatus";
 $route["produk/hapus"] = "ProdukFront/hapus";
 
 $route["perangkat"] = "PerangkatFront/index";
@@ -79,6 +78,7 @@ $route["perangkat/daftar"] = "PerangkatFront/index";
 $route["perangkat/ubah/(:num)"] = "PerangkatFront/ubah/$1";
 $route["perangkat/simpan-ubah"] = "PerangkatFront/simpanUbah";
 $route["perangkat/hapus"] = "PerangkatFront/hapus";
+$route["perangkat/ganti-meja"] = "PerangkatFront/pasangMeja";
 
 $route["transaksi"] = "TransaksiFront/index";
 $route["transaksi/daftar"] = "TransaksiFront/index";
@@ -96,4 +96,6 @@ $route["user/hapus"] = "UserFront/hapus";
 
 $api = "v1";
 
-$route["api/kategori"] = "api/{$api}/Kategori/getAll";
+$route["api/kategori"] = "api/{$api}/Api/getAll";
+$route["produk/ganti-status"] = "api/{$api}/Api/gantiStatus";
+$route["transaksi/beli"] = "api/{$api}/Api/simpanTransaksiBaru";
