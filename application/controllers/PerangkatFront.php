@@ -12,7 +12,6 @@ class PerangkatFront extends CI_Controller
 		$this->load->model("PerangkatModel", "perangkat", true);
 		$this->data["menu"] = "perangkat";
 
-		$this->UserModel->isLoggedIn();
 	}
 
 	/**
@@ -127,5 +126,68 @@ class PerangkatFront extends CI_Controller
 			alert("danger", "Data Tidak Di Temukan", "<p> Data Yang Akan Di Ubah Sudah Terhapus");
 			redirect(base_url("perangkat"));
 		}
+	}
+
+	public function pasangMeja()
+	{
+		$nomorMeja = $_POST["nomorMeja"] ?? 0;
+		$idPerangkat = $_POST["idPerangkat"] ?? 0;
+		$namaPerangkat = $_POST["namaPerangkat"] ?? 0;
+
+		if ($idPerangkat != 0) {
+			$perangkat = $this->perangkat->getAll("idPerangkat <> {$idPerangkat} AND nomorMeja = '{$nomorMeja}'");
+
+			if ($perangkat["total"] > 0) {
+				$response = [
+					"success" => false,
+					"pesan"   => "Nama Perangkat Sama"
+				];
+			} else {
+				$insert = $this->perangkat->updateData($idPerangkat, ["nomorMeja" => $nomorMeja]);
+				if ($insert) {
+
+					$response = [
+						"success" => true,
+						"pesan"   => "Berhasil Menyimpan Data"
+					];
+				} else {
+					$response = [
+						"success" => false,
+						"pesan"   => "Gagal Menyimpan Data"
+					];
+				}
+			}
+
+		} else {
+			$perangkat = $this->perangkat->getAll("nomorMeja = '{$nomorMeja}'");
+
+			if ($perangkat["total"] > 0) {
+				$response = [
+					"success" => false,
+					"pesan"   => "Nama Perangkat Sama"
+				];
+			} else {
+				$insert = $this->perangkat->saveData(["nomorMeja" => $nomorMeja, "namaPerangkat" => $namaPerangkat]);
+				if ($insert) {
+
+					$response = [
+						"success" => true,
+						"pesan"   => "Berhasil Menyimpan Data",
+						"id"      => $this->db->insert_id()
+					];
+				} else {
+					$response = [
+						"success" => false,
+						"pesan"   => "Gagal Menyimpan Data"
+					];
+				}
+			}
+		}
+
+
+		return $this->output
+			->set_content_type('application/json')
+			->set_status_header(200)
+			->set_output(json_encode($response));
 	}
 }

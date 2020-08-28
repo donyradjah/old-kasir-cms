@@ -14,8 +14,6 @@ class KategoriFront extends CI_Controller
 		$this->data["menu"] = "kategori";
 		$factory = (new \Kreait\Firebase\Factory())->withServiceAccount('./najieb-pos-firebase-adminsdk-aq5ac-ab6850be34.json');
 		$this->firebase = $factory->createDatabase();
-
-		$this->UserModel->isLoggedIn();
 	}
 
 	/**
