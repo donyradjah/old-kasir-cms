@@ -8,7 +8,7 @@
 
 class Api extends CI_Controller
 {
-    private $firebase;
+    private $firebase, $messaging;
 
     /**
      * Kategori constructor.
@@ -22,6 +22,7 @@ class Api extends CI_Controller
 
         $factory = (new \Kreait\Firebase\Factory())->withServiceAccount('./najieb-pos-firebase-adminsdk-aq5ac-ab6850be34.json');
         $this->firebase = $factory->createDatabase();
+        $this->messaging = $factory->createMessaging();
     }
 
     public function getAll()
@@ -106,6 +107,7 @@ class Api extends CI_Controller
             "totalPembelian" => $totalPembelian,
             "namaPerangkat"  => $perangkat["namaPerangkat"],
             "nomorMeja"      => $perangkat["nomorMeja"],
+            "totalBayar"     => 0,
         ];
 
         $simpan = $this->UniversalModel->insert("transaksi", $dataTransaksi);
@@ -154,6 +156,19 @@ class Api extends CI_Controller
                 "pesan"   => "Terjadi Kesalahan"
             ];
         }
+
+        $transaksiBelum = $this->UniversalModel->getAllData("transaksi", "status = 'belum-bayar'");
+
+        if ($transaksiBelum["total"] > 0) {
+            $message = \Kreait\Firebase\Messaging\CloudMessage::withTarget('topic', "kasir")
+                ->withNotification(\Kreait\Firebase\Messaging\Notification::create('Pesanan Baru', "Ada {$transaksiBelum["total"]} Transaksi Baru")) // optional
+                ->withData(["transaksibaru" => $transaksiBelum["total"]]);
+
+            $this->messaging->send($message);
+        }
+
+        $this->firebase->getReference("transaksi-belum")
+        ->set($transaksiBelum["total"]);
 
         return $this->output
             ->set_content_type('application/json')
