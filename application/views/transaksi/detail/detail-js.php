@@ -28,7 +28,7 @@
 			padding: '2em'
 		}).then(function (result) {
 			if (result.value) {
-				$.redirect("<?= base_url() ?>perangkat/hapus", {idUser: id}, "POST");
+				$.redirect("<?= base_url() ?>perangkat/hapus", {idKategori: id}, "POST");
 			}
 		})
 	}
