@@ -115,6 +115,11 @@ class Api extends CI_Controller
                     "success" => true,
                     "pesan"   => "Berhasil Menyimpan Data"
                 ];
+
+                $transaksiBelum = $this->UniversalModel->getAllData("transaksi", "status = 'belum-bayar'");
+
+                $this->firebase->getReference("transaksi-belum")
+                    ->set($transaksiBelum["total"]);
             } else {
                 $response = [
                     "success" => false,
