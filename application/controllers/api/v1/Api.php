@@ -107,7 +107,7 @@ class Api extends CI_Controller
                 $this->firebase->getReference("transaksi/{$id}/totalBayar")
                     ->set($bayar);
                 $this->firebase->getReference("transaksi/{$id}/waktuBayar")
-                    ->set($data["waktuBayar"]);
+                    ->set(date("Y-m-d H:i:s"));
                 $this->firebase->getReference("transaksi/{$id}/status")
                     ->set("proses");
 
