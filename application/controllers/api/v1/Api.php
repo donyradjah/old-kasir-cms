@@ -98,6 +98,7 @@ class Api extends CI_Controller
             $data = [
                 "totalBayar"  => $bayar,
                 "waktuBayar`" => date("Y-m-d H:i:s"),
+                "status`"     => "proses",
             ];
 
             $insert = $this->UniversalModel->update("transaksi", "IdTransaksi = {$id}", $data);
