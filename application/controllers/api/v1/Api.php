@@ -76,7 +76,55 @@ class Api extends CI_Controller
         } else {
             $response = [
                 "success" => false,
-                "pesan"   => "Gagal Menyimpan Data"
+                "pesan"   => "Data Tidak Di Temukan"
+            ];
+        }
+
+
+        return $this->output
+            ->set_content_type('application/json')
+            ->set_status_header(200)
+            ->set_output(json_encode($response));
+    }
+
+    public function simpanBayar()
+    {
+        $id = $_POST["idTransaksi"] ?? 0;
+        $bayar = $_POST["totalBayar"] ?? 0;
+
+        $produk = $this->UniversalModel->getOneData("transaksi", "IdTransaksi = {$id}");
+
+        if ($produk["total"] > 0) {
+            $data = [
+                "totalBayar"  => $bayar,
+                "waktuBayar`" => date("Y-m-d H:i:s"),
+            ];
+
+            $insert = $this->UniversalModel->update("transaksi", "IdTransaksi = {$id}", $data);
+
+            if ($insert) {
+                $produk["data"]["status"] = $_POST["status"] ?? "kosong";
+                $this->firebase->getReference("transaksi/{$id}/totalBayar")
+                    ->set($bayar);
+                $this->firebase->getReference("transaksi/{$id}/waktuBayar")
+                    ->set($data["waktuBayar"]);
+                $this->firebase->getReference("transaksi/{$id}/status")
+                    ->set("proses");
+
+                $response = [
+                    "success" => true,
+                    "pesan"   => "Berhasil Menyimpan Data"
+                ];
+            } else {
+                $response = [
+                    "success" => false,
+                    "pesan"   => "Gagal Menyimpan Data"
+                ];
+            }
+        } else {
+            $response = [
+                "success" => false,
+                "pesan"   => "Data Tidak Di Temukan"
             ];
         }
 
@@ -168,12 +216,13 @@ class Api extends CI_Controller
         }
 
         $this->firebase->getReference("transaksi-belum")
-        ->set($transaksiBelum["total"]);
+            ->set($transaksiBelum["total"]);
 
         return $this->output
             ->set_content_type('application/json')
             ->set_status_header(200)
             ->set_output(json_encode($response));
     }
+
 
 }
