@@ -100,3 +100,5 @@ $route["api/kategori"] = "api/{$api}/Api/getAll";
 $route["produk/ganti-status"] = "api/{$api}/Api/gantiStatus";
 $route["transaksi/beli"] = "api/{$api}/Api/simpanTransaksiBaru";
 $route["transaksi/simpan-bayar"] = "api/{$api}/Api/simpanBayar";
+$route["transaksi/batal"] = "api/{$api}/Api/transaksiBatal";
+$route["transaksi/selesai"] = "api/{$api}/Api/simpanSelesai";

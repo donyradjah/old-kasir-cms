@@ -121,6 +121,95 @@ class Api extends CI_Controller
 
                 $this->firebase->getReference("transaksi-belum")
                     ->set($transaksiBelum["total"]);
+
+                $transaksiBelum = $this->UniversalModel->getAllData("transaksi", "status = 'proses'");
+
+                if ($transaksiBelum["total"] > 0) {
+                    $message = \Kreait\Firebase\Messaging\CloudMessage::withTarget('topic', "dapur")
+                        ->withNotification(\Kreait\Firebase\Messaging\Notification::create('Pesanan Baru', "Ada {$transaksiBelum["total"]} Transaksi Baru")) // optional
+                        ->withData(["transaksibaru" => $transaksiBelum["total"]]);
+
+                    $this->messaging->send($message);
+                }
+
+
+                $this->firebase->getReference("transaksi-proses")
+                    ->set($transaksiBelum["total"]);
+
+
+            } else {
+                $response = [
+                    "success" => false,
+                    "pesan"   => "Gagal Menyimpan Data"
+                ];
+            }
+        } else {
+            $response = [
+                "success" => false,
+                "pesan"   => "Data Tidak Di Temukan"
+            ];
+        }
+
+
+        return $this->output
+            ->set_content_type('application/json')
+            ->set_status_header(200)
+            ->set_output(json_encode($response));
+    }
+
+    public function transaksiBatal()
+    {
+        $id = $_POST["idTransaksi"] ?? 0;
+
+        $produk = $this->UniversalModel->getOneData("transaksi", "IdTransaksi = {$id}");
+
+        if ($produk["total"] > 0) {
+            $data = [
+                "waktuSelesai`" => date("Y-m-d H:i:s"),
+                "status`"       => "batal",
+            ];
+
+            $insert = $this->UniversalModel->update("transaksi", "IdTransaksi = {$id}", $data);
+
+            if ($insert) {
+                $produk["data"]["status"] = $_POST["status"] ?? "kosong";
+                $this->firebase->getReference("transaksi/{$id}/waktuSelesai")
+                    ->set(date("Y-m-d H:i:s"));
+                $this->firebase->getReference("transaksi/{$id}/status")
+                    ->set("batal");
+
+                $response = [
+                    "success" => true,
+                    "pesan"   => "Berhasil Menyimpan Data"
+                ];
+
+                $transaksiBelum = $this->UniversalModel->getAllData("transaksi", "status = 'belum-bayar'");
+
+                if ($transaksiBelum["total"] > 0) {
+                    $message = \Kreait\Firebase\Messaging\CloudMessage::withTarget('topic', "kasir")
+                        ->withNotification(\Kreait\Firebase\Messaging\Notification::create('Pesanan Baru', "Ada {$transaksiBelum["total"]} Transaksi Baru")) // optional
+                        ->withData(["transaksibaru" => $transaksiBelum["total"]]);
+
+                    $this->messaging->send($message);
+                }
+
+                $this->firebase->getReference("transaksi-belum")
+                    ->set($transaksiBelum["total"]);
+
+                $transaksiBelum = $this->UniversalModel->getAllData("transaksi", "status = 'proses'");
+
+                if ($transaksiBelum["total"] > 0) {
+                    $message = \Kreait\Firebase\Messaging\CloudMessage::withTarget('topic', "dapur")
+                        ->withNotification(\Kreait\Firebase\Messaging\Notification::create('Pesanan Baru', "Ada {$transaksiBelum["total"]} Transaksi Baru")) // optional
+                        ->withData(["transaksibaru" => $transaksiBelum["total"]]);
+
+                    $this->messaging->send($message);
+                }
+
+                $this->firebase->getReference("transaksi-proses")
+                    ->set($transaksiBelum["total"]);
+
+
             } else {
                 $response = [
                     "success" => false,
@@ -230,5 +319,76 @@ class Api extends CI_Controller
             ->set_output(json_encode($response));
     }
 
+    public function simpanSelesai()
+    {
+        $id = $_POST["idTransaksi"] ?? 0;
 
+        $produk = $this->UniversalModel->getOneData("transaksi", "IdTransaksi = {$id}");
+
+        if ($produk["total"] > 0) {
+            $data = [
+                "waktuSelesai`" => date("Y-m-d H:i:s"),
+                "status`"       => "selesai",
+            ];
+
+            $insert = $this->UniversalModel->update("transaksi", "IdTransaksi = {$id}", $data);
+
+            if ($insert) {
+                $produk["data"]["status"] = $_POST["status"] ?? "kosong";
+                $this->firebase->getReference("transaksi/{$id}/waktuSelesai")
+                    ->set(date("Y-m-d H:i:s"));
+                $this->firebase->getReference("transaksi/{$id}/status")
+                    ->set("selesai");
+
+                $response = [
+                    "success" => true,
+                    "pesan"   => "Berhasil Menyimpan Data"
+                ];
+
+                $transaksiBelum = $this->UniversalModel->getAllData("transaksi", "status = 'belum-bayar'");
+
+                if ($transaksiBelum["total"] > 0) {
+                    $message = \Kreait\Firebase\Messaging\CloudMessage::withTarget('topic', "kasir")
+                        ->withNotification(\Kreait\Firebase\Messaging\Notification::create('Pesanan Baru', "Ada {$transaksiBelum["total"]} Transaksi Baru")) // optional
+                        ->withData(["transaksibaru" => $transaksiBelum["total"]]);
+
+                    $this->messaging->send($message);
+                }
+
+                $this->firebase->getReference("transaksi-belum")
+                    ->set($transaksiBelum["total"]);
+
+                $transaksiBelum = $this->UniversalModel->getAllData("transaksi", "status = 'proses'");
+
+                if ($transaksiBelum["total"] > 0) {
+                    $message = \Kreait\Firebase\Messaging\CloudMessage::withTarget('topic', "dapur")
+                        ->withNotification(\Kreait\Firebase\Messaging\Notification::create('Pesanan Baru', "Ada {$transaksiBelum["total"]} Transaksi Baru")) // optional
+                        ->withData(["transaksibaru" => $transaksiBelum["total"]]);
+
+                    $this->messaging->send($message);
+                }
+
+                $this->firebase->getReference("transaksi-proses")
+                    ->set($transaksiBelum["total"]);
+
+
+            } else {
+                $response = [
+                    "success" => false,
+                    "pesan"   => "Gagal Menyimpan Data"
+                ];
+            }
+        } else {
+            $response = [
+                "success" => false,
+                "pesan"   => "Data Tidak Di Temukan"
+            ];
+        }
+
+
+        return $this->output
+            ->set_content_type('application/json')
+            ->set_status_header(200)
+            ->set_output(json_encode($response));
+    }
 }
